@@ -1,32 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
-<title>FBFV</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FBFV - Federação Brasileira de Futebol Virtual</title>
 
 <style>
 
+/* RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+/* BODY */
+
 body{
-font-family: Arial;
 background:#0f172a;
 color:white;
-text-align:center;
 }
+
+/* HEADER */
 
 header{
 background:#16a34a;
 padding:20px;
-font-size:26px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
 }
 
-button{
-padding:12px;
-margin:10px;
-border:none;
-border-radius:8px;
+/* MENU */
+
+nav{
+display:flex;
+justify-content:center;
+gap:20px;
+background:#020617;
+padding:15px;
+}
+
+nav button{
 background:#22c55e;
+border:none;
+padding:10px 18px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:30px;
+}
+
+/* TITLES */
+
+h2{
+margin-bottom:20px;
+}
+
+/* CARDS */
+
+.card{
+background:#020617;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+/* INPUTS */
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+}
+
+/* BUTTON */
+
+.btn{
+background:#16a34a;
+padding:10px;
+border:none;
+margin-top:10px;
 color:white;
-font-size:16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#16a34a;
+padding:10px;
+}
+
+td{
+background:#020617;
+padding:10px;
+text-align:center;
+}
+
+tr:nth-child(even) td{
+background:#111827;
+}
+
+/* LIST */
+
+ul{
+list-style:none;
+margin-top:10px;
+}
+
+li{
+background:#020617;
+padding:10px;
+margin-top:5px;
+border-radius:6px;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+margin-top:40px;
+padding:20px;
+background:#020617;
+}
+
+/* RESPONSIVO */
+
+@media(max-width:700px){
+
+nav{
+flex-wrap:wrap;
+}
+
 }
 
 </style>
@@ -36,15 +163,300 @@ font-size:16px;
 <body>
 
 <header>
-Federação Brasileira de Futebol Virtual
+FBFV - Federação Brasileira de Futebol Virtual
 </header>
 
-<h2>Sistema oficial da FBFV</h2>
+<nav>
 
-<button>Clubes</button>
-<button>Jogadores</button>
-<button>Competições</button>
-<button>Partidas</button>
+<button onclick="showSection('home')">Início</button>
+<button onclick="showSection('clubes')">Clubes</button>
+<button onclick="showSection('partidas')">Partidas</button>
+<button onclick="showSection('tabela')">Classificação</button>
+
+</nav>
+
+<div class="container">
+
+<!-- HOME -->
+
+<section id="home">
+
+<div class="card">
+
+<h2>Bem-vindo à FBFV</h2>
+
+<p>
+Sistema oficial para gerenciamento de campeonatos de futebol virtual.
+Cadastre clubes, registre partidas e acompanhe a classificação.
+</p>
+
+</div>
+
+</section>
+
+<!-- CLUBES -->
+
+<section id="clubes" style="display:none">
+
+<div class="card">
+
+<h2>Cadastrar Clube</h2>
+
+<input id="nomeClube" placeholder="Nome do clube">
+
+<button class="btn" onclick="addClub()">Cadastrar</button>
+
+</div>
+
+<div class="card">
+
+<h2>Clubes cadastrados</h2>
+
+<ul id="listaClubes"></ul>
+
+</div>
+
+</section>
+
+<!-- PARTIDAS -->
+
+<section id="partidas" style="display:none">
+
+<div class="card">
+
+<h2>Registrar Partida</h2>
+
+<input id="mandante" placeholder="Time mandante">
+<input id="golsMandante" placeholder="Gols mandante" type="number">
+<input id="visitante" placeholder="Time visitante">
+<input id="golsVisitante" placeholder="Gols visitante" type="number">
+
+<button class="btn" onclick="addMatch()">Registrar</button>
+
+</div>
+
+<div class="card">
+
+<h2>Partidas registradas</h2>
+
+<ul id="listaPartidas"></ul>
+
+</div>
+
+</section>
+
+<!-- TABELA -->
+
+<section id="tabela" style="display:none">
+
+<div class="card">
+
+<h2>Classificação</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Clube</th>
+<th>P</th>
+<th>V</th>
+<th>E</th>
+<th>D</th>
+<th>SG</th>
+</tr>
+
+</thead>
+
+<tbody id="tabelaTimes"></tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</div>
+
+<footer>
+Sistema FBFV © 2026
+</footer>
+
+<script>
+
+/* DADOS */
+
+let clubes = []
+let partidas = []
+let tabela = {}
+
+/* MUDAR TELA */
+
+function showSection(id){
+
+document.querySelectorAll("section").forEach(sec=>{
+
+sec.style.display="none"
+
+})
+
+document.getElementById(id).style.display="block"
+
+}
+
+/* ADICIONAR CLUBE */
+
+function addClub(){
+
+let nome = document.getElementById("nomeClube").value
+
+if(nome=="") return
+
+clubes.push(nome)
+
+tabela[nome]={p:0,v:0,e:0,d:0,sg:0}
+
+updateClubList()
+
+}
+
+/* LISTA CLUBES */
+
+function updateClubList(){
+
+let lista = document.getElementById("listaClubes")
+
+lista.innerHTML=""
+
+clubes.forEach(c=>{
+
+let li=document.createElement("li")
+
+li.textContent=c
+
+lista.appendChild(li)
+
+})
+
+}
+
+/* ADICIONAR PARTIDA */
+
+function addMatch(){
+
+let m=document.getElementById("mandante").value
+let v=document.getElementById("visitante").value
+
+let gm=parseInt(document.getElementById("golsMandante").value)
+let gv=parseInt(document.getElementById("golsVisitante").value)
+
+if(!tabela[m] || !tabela[v]){
+
+alert("Cadastre os clubes primeiro")
+
+return
+
+}
+
+partidas.push(m+" "+gm+" x "+gv+" "+v)
+
+updateMatches()
+
+updateTable(m,v,gm,gv)
+
+}
+
+/* LISTA PARTIDAS */
+
+function updateMatches(){
+
+let lista=document.getElementById("listaPartidas")
+
+lista.innerHTML=""
+
+partidas.forEach(p=>{
+
+let li=document.createElement("li")
+
+li.textContent=p
+
+lista.appendChild(li)
+
+})
+
+}
+
+/* ATUALIZAR TABELA */
+
+function updateTable(m,v,gm,gv){
+
+tabela[m].sg += gm-gv
+tabela[v].sg += gv-gm
+
+if(gm>gv){
+
+tabela[m].p+=3
+tabela[m].v++
+tabela[v].d++
+
+}
+
+else if(gv>gm){
+
+tabela[v].p+=3
+tabela[v].v++
+tabela[m].d++
+
+}
+
+else{
+
+tabela[m].p++
+tabela[v].p++
+
+tabela[m].e++
+tabela[v].e++
+
+}
+
+renderTable()
+
+}
+
+/* MOSTRAR TABELA */
+
+function renderTable(){
+
+let body=document.getElementById("tabelaTimes")
+
+body.innerHTML=""
+
+let times=Object.keys(tabela)
+
+times.sort((a,b)=>tabela[b].p - tabela[a].p)
+
+times.forEach((t,i)=>{
+
+let tr=document.createElement("tr")
+
+tr.innerHTML=
+
+`<td>${i+1}</td>
+<td>${t}</td>
+<td>${tabela[t].p}</td>
+<td>${tabela[t].v}</td>
+<td>${tabela[t].e}</td>
+<td>${tabela[t].d}</td>
+<td>${tabela[t].sg}</td>`
+
+body.appendChild(tr)
+
+})
+
+}
+
+</script>
 
 </body>
 
